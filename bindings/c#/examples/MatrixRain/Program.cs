@@ -4,7 +4,12 @@ const int MaxHeight = 16;
 const int ColorStep = 15;
 const int FrameStep = 1;
 
-using var matrix = new RGBLedMatrix(new RGBLedMatrixOptions { ChainLength = 2 });
+using var matrix = new RGBLedMatrix(new RGBLedMatrixOptions
+{
+	ChainLength = 2,
+	DisableHardwarePulsing = true,
+	GpioSlowdown = 3
+});
 var canvas = matrix.CreateOffscreenCanvas();
 
 var rnd = new Random();
@@ -28,11 +33,11 @@ while (running)
     if (frame % FrameStep == 0)
     {
         if (recycled.Count == 0)
-            points.Add(new Point(rnd.Next(0, canvas.Width - 1), 0));
+            points.Add(new Point(rnd.Next(0, 32 - 1), 0));
         else
         {
             var point = recycled.Pop();
-            point.X = rnd.Next(0, canvas.Width - 1);
+            point.X = rnd.Next(0, 32 - 1);
             point.Y = 0;
             point.Recycled = false;
         }
@@ -45,7 +50,7 @@ while (running)
         if (point.Recycled) continue;
         point.Y++;
 
-        if (point.Y - MaxHeight > canvas.Height)
+        if (point.Y - MaxHeight > canvas.Width)
         {
             point.Recycled = true;
             recycled.Push(point);
@@ -53,7 +58,7 @@ while (running)
 
         for (var i = 0; i < MaxHeight; i++)
         {
-            canvas.SetPixel(point.X, point.Y - i, new Color(0, 255 - i * ColorStep, 0));
+            canvas.SetPixel(point.Y - 1, point.X, new Color(0, 255 - i * ColorStep, 0));
         }
     }
 

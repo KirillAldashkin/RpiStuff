@@ -73,13 +73,13 @@ while (running)
     }
     for (var i = 0; (i < images[curImage].Frames.Count) && running; ++i)
     {
-        matrix.SwapOnVsync(canvas);
         images[curImage].Frames[i].ProcessPixelRows(data =>
         {
             for (var y = 0; y < data.Height; y++)
                 data.GetRowSpan(y).CopyTo(bytes.AsSpan(y * data.Width, data.Width));
         });
         canvas.SetPixels(0, 0, canvas.Width, canvas.Height, MemoryMarshal.Cast<Rgb24, RPiRgbLEDMatrix.Color>(bytes));
+        matrix.SwapOnVsync(canvas);
         Thread.Sleep(images[curImage].Frames[i].Metadata.GetGifMetadata().FrameDelay * 10);
     }
 }
